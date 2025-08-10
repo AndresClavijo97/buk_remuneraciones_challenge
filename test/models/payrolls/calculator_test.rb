@@ -1,38 +1,10 @@
 require "test_helper"
 
 class Payrolls::CalculatorTest < ActiveSupport::TestCase
+  fixtures :employees, :health_plans, :assignments
+  
   def setup
-    @employee = Employee.create!(
-      rut: "18.123.456-7",
-      name: "Ana María Rojas", 
-      hire_date: "2023-01-01",
-      base_salary: 1200000,
-      health_plan_attributes: { plan_type: "fonasa" },
-      assignments_attributes: [
-        {
-          name: "Movilización",
-          assignment_type: "benefit",
-          amount: 80000,
-          taxable: false,
-          tributable: false
-        },
-        {
-          name: "Bono Producción", 
-          assignment_type: "benefit",
-          amount: 150000,
-          taxable: true,
-          tributable: true
-        },
-        {
-          name: "Anticipo Sueldo",
-          assignment_type: "deduction", 
-          amount: 50000,
-          taxable: false,
-          tributable: false
-        }
-      ]
-    )
-    
+    @employee = employees(:ana_maria)
     @calculator = Payrolls::Calculator.new(@employee)
   end
 
@@ -53,7 +25,7 @@ class Payrolls::CalculatorTest < ActiveSupport::TestCase
     result = @calculator.calculate
     
     assert_equal 150000, result.taxable_benefits # Bono Producción
-    assert_equal 80000, result.non_taxable_benefits # Movilización
+    assert_equal 140000, result.non_taxable_benefits # Movilización + Colación
   end
 
   test "calculates legal gratification" do
@@ -116,30 +88,16 @@ class Payrolls::CalculatorTest < ActiveSupport::TestCase
   end
 
   test "uses fixed UF amount for Isapre" do
-    isapre_employee = Employee.create!(
-      rut: "19.876.543-2",
-      name: "Carlos Soto",
-      hire_date: "2024-01-01", 
-      base_salary: 1500000,
-      health_plan_attributes: { plan_type: "isapre", plan_uf: 5.2 }
-    )
-
+    isapre_employee = employees(:carlos_soto)
     isapre_calculator = Payrolls::Calculator.new(isapre_employee)
     isapre_result = isapre_calculator.calculate
 
-    expected_health = (5.2 * 37000).round
+    expected_health = (4.5 * 37000).round
     assert_equal expected_health, isapre_result.legal_deductions.health
   end
 
   test "applies income cap for AFP and health" do
-    high_salary_employee = Employee.create!(
-      rut: "20.111.222-3",
-      name: "High Earner",
-      hire_date: "2023-01-01",
-      base_salary: 5000000,
-      health_plan_attributes: { plan_type: "fonasa" }
-    )
-
+    high_salary_employee = employees(:high_earner)
     calculator = Payrolls::Calculator.new(high_salary_employee)
     result = calculator.calculate
     

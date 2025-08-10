@@ -1,0 +1,17 @@
+ana_maria:
+  rut: "18.123.456-7"
+  name: "Ana María Rojas"
+  hire_date: <%= Date.parse("2023-01-01") %>
+  base_salary: 1200000
+
+carlos_soto:
+  rut: "19.876.543-2"
+  name: "Carlos Soto Pérez"
+  hire_date: <%= Date.parse("2024-07-15") %>
+  base_salary: 950000
+
+high_earner:
+  rut: "20.111.222-3"
+  name: "High Earner"
+  hire_date: <%= Date.parse("2023-01-01") %>
+  base_salary: 5000000

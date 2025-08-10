@@ -1,0 +1,10 @@
+{
+  "data": [
+    {
+      "rut": "",
+      "name": "Invalid Employee",
+      "hire_date": "2023-01-01",
+      "base_salary": -1000
+    }
+  ]
+}

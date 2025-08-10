@@ -2,77 +2,15 @@ require "test_helper"
 
 class Api::PayrollsTest < ActionDispatch::IntegrationTest
   def setup
-    @payload = {
-      "data": [
-        {
-          "rut": "18.123.456-7",
-          "name": "Ana María Rojas",
-          "hire_date": "2023-01-01",
-          "base_salary": 1200000,
-          "health_plan_attributes": {
-            "plan_type": "fonasa"
-          },
-          "assignments_attributes": [
-            {
-              "name": "Movilización",
-              "assignment_type": "benefit",
-              "amount": 80000,
-              "taxable": false,
-              "tributable": false
-            },
-            {
-              "name": "Colación",
-              "assignment_type": "benefit",
-              "amount": 60000,
-              "taxable": false,
-              "tributable": false
-            },
-            {
-              "name": "Bono Producción",
-              "assignment_type": "benefit",
-              "amount": 150000,
-              "taxable": true,
-              "tributable": true
-            },
-            {
-              "name": "Anticipo Sueldo",
-              "assignment_type": "deduction",
-              "amount": 50000,
-              "taxable": false,
-              "tributable": false
-            }
-          ]
-        },
-        {
-          "rut": "19.876.543-2",
-          "name": "Carlos Soto Pérez",
-          "hire_date": "2024-07-15",
-          "base_salary": 950000,
-          "health_plan_attributes": {
-            "plan_type": "isapre",
-            "plan_uf": 4.5
-          },
-          "assignments_attributes": [
-            {
-              "name": "Movilización Proporcional",
-              "assignment_type": "benefit",
-              "amount": 40000,
-              "taxable": false,
-              "tributable": false
-            }
-          ]
-        }
-      ]
-    }
+    @payload = JSON.parse(file_fixture("payroll_data.json").read)
   end
 
   test "successfully loads all employee data when data is valid" do
-    assert_difference("Employee.count", 2) do
-      put "/api/payrolls/load", params: @payload, as: :json
-    end
+    put "/api/payrolls/load", params: @payload, as: :json
 
     assert_response :ok
     assert_equal({ "message" => "Data loaded successfully" }, JSON.parse(response.body))
+    assert_equal 2, Employee.count
   end
 
   test "creates employees with correct attributes" do
@@ -120,21 +58,13 @@ class Api::PayrollsTest < ActionDispatch::IntegrationTest
   end
 
   test "returns error for invalid employee data" do
-    invalid_payload = {
-      data: [
-        {
-          rut: "",
-          name: "Invalid Employee",
-          hire_date: "2023-01-01",
-          base_salary: -1000
-        }
-      ]
-    }
+    initial_count = Employee.count
+    invalid_payload = JSON.parse(file_fixture("invalid_payroll_data.json").read)
 
     put "/api/payrolls/load", params: invalid_payload, as: :json
 
     assert_response :bad_request
     assert JSON.parse(response.body).key?("error")
-    assert_equal 0, Employee.count
+    assert_equal initial_count, Employee.count
   end
 end

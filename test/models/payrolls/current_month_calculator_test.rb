@@ -1,29 +1,18 @@
 require "test_helper"
 
 class Payrolls::CurrentMonthCalculatorTest < ActiveSupport::TestCase
+  fixtures :employees, :health_plans, :assignments
+  
   def setup
-    @employee1 = Employee.create!(
-      rut: "18.123.456-7",
-      name: "Ana María Rojas",
-      hire_date: "2023-01-01", 
-      base_salary: 1200000,
-      health_plan_attributes: { plan_type: "fonasa" }
-    )
-
-    @employee2 = Employee.create!(
-      rut: "19.876.543-2", 
-      name: "Carlos Soto",
-      hire_date: "2024-01-01",
-      base_salary: 950000,
-      health_plan_attributes: { plan_type: "isapre", plan_uf: 4.5 }
-    )
+    @employee1 = employees(:ana_maria)
+    @employee2 = employees(:carlos_soto)
   end
 
   test "calculates payroll for all employees" do
     results = Payrolls::CurrentMonthCalculator.calculate
     
     assert_instance_of Array, results
-    assert_equal 2, results.size
+    assert_equal 3, results.size
   end
 
   test "returns hash format for each employee" do
@@ -45,7 +34,7 @@ class Payrolls::CurrentMonthCalculatorTest < ActiveSupport::TestCase
     assert_equal "Ana María Rojas", ana_result[:employee_name]
     assert_equal 1200000, ana_result[:base_salary]
     
-    assert_equal "Carlos Soto", carlos_result[:employee_name]
+    assert_equal "Carlos Soto Pérez", carlos_result[:employee_name]
     assert_equal 950000, carlos_result[:base_salary]
   end
 

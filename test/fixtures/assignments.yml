@@ -1,0 +1,47 @@
+ana_movilizacion:
+  employee: ana_maria
+  name: "Movilización"
+  assignment_type: "benefit"
+  amount: 80000
+  taxable: false
+  tributable: false
+
+ana_colacion:
+  employee: ana_maria
+  name: "Colación"
+  assignment_type: "benefit"
+  amount: 60000
+  taxable: false
+  tributable: false
+
+ana_bono_produccion:
+  employee: ana_maria
+  name: "Bono Producción"
+  assignment_type: "benefit"
+  amount: 150000
+  taxable: true
+  tributable: true
+
+ana_anticipo:
+  employee: ana_maria
+  name: "Anticipo Sueldo"
+  assignment_type: "deduction"
+  amount: 50000
+  taxable: false
+  tributable: false
+
+carlos_movilizacion:
+  employee: carlos_soto
+  name: "Movilización Proporcional"
+  assignment_type: "benefit"
+  amount: 40000
+  taxable: false
+  tributable: false
+
+carlos_comision:
+  employee: carlos_soto
+  name: "Comisión Ventas"
+  assignment_type: "benefit"
+  amount: 75000
+  taxable: true
+  tributable: true

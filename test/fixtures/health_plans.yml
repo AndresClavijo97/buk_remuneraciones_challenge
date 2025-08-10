@@ -1,0 +1,14 @@
+ana_fonasa:
+  employee: ana_maria
+  plan_type: "fonasa"
+  plan_uf: 
+
+carlos_isapre:
+  employee: carlos_soto
+  plan_type: "isapre"
+  plan_uf: 4.5
+
+high_earner_fonasa:
+  employee: high_earner
+  plan_type: "fonasa"
+  plan_uf:

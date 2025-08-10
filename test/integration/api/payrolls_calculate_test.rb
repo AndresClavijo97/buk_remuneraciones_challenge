@@ -1,54 +1,11 @@
 require "test_helper"
 
 class Api::PayrollsCalculateTest < ActionDispatch::IntegrationTest
+  fixtures :employees, :health_plans, :assignments
+  
   def setup
-    @employee1 = Employee.create!(
-      rut: "18.123.456-7",
-      name: "Ana María Rojas",
-      hire_date: "2023-01-01",
-      base_salary: 1200000,
-      health_plan_attributes: { plan_type: "fonasa" },
-      assignments_attributes: [
-        {
-          name: "Movilización",
-          assignment_type: "benefit",
-          amount: 80000,
-          taxable: false,
-          tributable: false
-        },
-        {
-          name: "Bono Producción",
-          assignment_type: "benefit",
-          amount: 150000,
-          taxable: true,
-          tributable: true
-        },
-        {
-          name: "Anticipo Sueldo",
-          assignment_type: "deduction",
-          amount: 50000,
-          taxable: false,
-          tributable: false
-        }
-      ]
-    )
-
-    @employee2 = Employee.create!(
-      rut: "19.876.543-2",
-      name: "Carlos Soto Pérez",
-      hire_date: "2024-07-15",
-      base_salary: 950000,
-      health_plan_attributes: { plan_type: "isapre", plan_uf: 4.5 },
-      assignments_attributes: [
-        {
-          name: "Comisión Ventas",
-          assignment_type: "benefit",
-          amount: 75000,
-          taxable: true,
-          tributable: true
-        }
-      ]
-    )
+    @employee1 = employees(:ana_maria)
+    @employee2 = employees(:carlos_soto)
   end
 
   test "calculates payroll for all employees" do
@@ -59,7 +16,7 @@ class Api::PayrollsCalculateTest < ActionDispatch::IntegrationTest
     json_response = JSON.parse(response.body)
     assert json_response.key?("liquidaciones")
     assert_instance_of Array, json_response["liquidaciones"]
-    assert_equal 2, json_response["liquidaciones"].size
+    assert_equal 3, json_response["liquidaciones"].size
   end
 
   test "includes all required payroll fields" do
