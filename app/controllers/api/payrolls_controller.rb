@@ -1,19 +1,19 @@
 class Api::PayrollsController < ApplicationController
-  def load
+  rescue_from StandardError, with: :handle_error
 
+  def load
     with_transaction do
       Employee.destroy_all
       Employee.create!(permitted_params)
     end
   
     render json: { message: "Data loaded successfully" }, status: :ok
-
-  rescue => e
-    render json: { error: e.message }, status: :bad_request
   end
 
   def calculate
-    render status: :ok
+    liquidaciones = Payrolls::CurrentMonthCalculator.calculate
+
+    render json: { liquidaciones: liquidaciones }, status: :ok
   end
 
   private
@@ -26,9 +26,5 @@ class Api::PayrollsController < ApplicationController
         assignments_attributes: [:name, :assignment_type, :amount, :taxable, :tributable]
       )
     end
-  end
-
-  def with_transaction(&)
-    ApplicationRecord.transaction(&)
   end
 end

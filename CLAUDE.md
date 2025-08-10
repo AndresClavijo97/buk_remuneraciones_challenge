@@ -68,8 +68,10 @@ The project is in early development stage:
 
 ## Testing Framework
 
-Uses RSpec testing framework with integration tests in `/test` directory. Current tests only verify endpoint accessibility, not business logic.
+Uses default rails testing framework with integration tests in `/test` directory. Current tests only verify endpoint accessibility, not business logic.
 
 ## Architecture
 
 - Layered Design
+- Value Object
+- OOP (declarative names for PORO's instead imperative)
