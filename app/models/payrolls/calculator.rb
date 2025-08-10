@@ -91,5 +91,6 @@ module Payrolls
 
     def total_income
       @employee.base_salary + @employee.taxable_benefits_total + @employee.non_taxable_benefits_total + legal_gratification
+    end
   end
 end
