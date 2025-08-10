@@ -8,15 +8,17 @@ class Payrolls::CurrentMonthCalculatorTest < ActiveSupport::TestCase
     @employee2 = employees(:carlos_soto)
   end
 
-  test "calculates payroll for all employees" do
-    results = Payrolls::CurrentMonthCalculator.calculate
+  test "calculates payroll for specified employees" do
+    ruts = [@employee1.rut, @employee2.rut]
+    results = Payrolls::CurrentMonthCalculator.calculate(ruts)
     
     assert_instance_of Array, results
-    assert_equal 3, results.size
+    assert_equal 2, results.size
   end
 
   test "returns hash format for each employee" do
-    results = Payrolls::CurrentMonthCalculator.calculate
+    ruts = [@employee1.rut]
+    results = Payrolls::CurrentMonthCalculator.calculate(ruts)
     result = results.first
     
     assert_instance_of Hash, result
@@ -27,7 +29,8 @@ class Payrolls::CurrentMonthCalculatorTest < ActiveSupport::TestCase
   end
 
   test "includes correct employee data" do
-    results = Payrolls::CurrentMonthCalculator.calculate
+    ruts = [@employee1.rut, @employee2.rut]
+    results = Payrolls::CurrentMonthCalculator.calculate(ruts)
     ana_result = results.find { |r| r[:employee_rut] == "18.123.456-7" }
     carlos_result = results.find { |r| r[:employee_rut] == "19.876.543-2" }
 
@@ -38,9 +41,9 @@ class Payrolls::CurrentMonthCalculatorTest < ActiveSupport::TestCase
     assert_equal 950000, carlos_result[:base_salary]
   end
 
-  test "returns empty array with no employees" do
-    Employee.destroy_all
-    results = Payrolls::CurrentMonthCalculator.calculate
+  test "returns empty array with non-existent ruts" do
+    ruts = ["99.999.999-9"]
+    results = Payrolls::CurrentMonthCalculator.calculate(ruts)
     
     assert_equal [], results
   end

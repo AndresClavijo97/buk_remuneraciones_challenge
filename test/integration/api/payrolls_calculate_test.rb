@@ -8,19 +8,21 @@ class Api::PayrollsCalculateTest < ActionDispatch::IntegrationTest
     @employee2 = employees(:carlos_soto)
   end
 
-  test "calculates payroll for all employees" do
-    post "/api/payrolls/calculate", as: :json
+  test "calculates payroll for specified employees by RUT" do
+    ruts_payload = { ruts: [@employee1.rut, @employee2.rut] }
+    post "/api/payrolls/calculate", params: ruts_payload, as: :json
 
     assert_response :ok
     
     json_response = JSON.parse(response.body)
     assert json_response.key?("liquidaciones")
     assert_instance_of Array, json_response["liquidaciones"]
-    assert_equal 3, json_response["liquidaciones"].size
+    assert_equal 2, json_response["liquidaciones"].size
   end
 
   test "includes all required payroll fields" do
-    post "/api/payrolls/calculate", as: :json
+    ruts_payload = { ruts: [@employee1.rut] }
+    post "/api/payrolls/calculate", params: ruts_payload, as: :json
 
     json_response = JSON.parse(response.body)
     liquidacion = json_response["liquidaciones"].first
@@ -37,7 +39,8 @@ class Api::PayrollsCalculateTest < ActionDispatch::IntegrationTest
   end
 
   test "calculates legal deductions correctly" do
-    post "/api/payrolls/calculate", as: :json
+    ruts_payload = { ruts: [@employee1.rut] }
+    post "/api/payrolls/calculate", params: ruts_payload, as: :json
 
     json_response = JSON.parse(response.body)
     ana_liquidacion = json_response["liquidaciones"].find { |l| l["employee_rut"] == "18.123.456-7" }
@@ -58,7 +61,8 @@ class Api::PayrollsCalculateTest < ActionDispatch::IntegrationTest
   end
 
   test "handles isapre health plan correctly" do
-    post "/api/payrolls/calculate", as: :json
+    ruts_payload = { ruts: [@employee2.rut] }
+    post "/api/payrolls/calculate", params: ruts_payload, as: :json
 
     json_response = JSON.parse(response.body)
     carlos_liquidacion = json_response["liquidaciones"].find { |l| l["employee_rut"] == "19.876.543-2" }
@@ -69,7 +73,8 @@ class Api::PayrollsCalculateTest < ActionDispatch::IntegrationTest
   end
 
   test "calculates legal gratification with limit" do
-    post "/api/payrolls/calculate", as: :json
+    ruts_payload = { ruts: [@employee1.rut] }
+    post "/api/payrolls/calculate", params: ruts_payload, as: :json
 
     json_response = JSON.parse(response.body)
     liquidacion = json_response["liquidaciones"].first
@@ -82,13 +87,20 @@ class Api::PayrollsCalculateTest < ActionDispatch::IntegrationTest
     assert_equal expected_gratification, liquidacion["legal_gratification"]
   end
 
-  test "returns empty array when no employees exist" do
-    Employee.destroy_all
-    
-    post "/api/payrolls/calculate", as: :json
+  test "returns empty array when no matching employees exist" do
+    ruts_payload = { ruts: ["99.999.999-9"] }
+    post "/api/payrolls/calculate", params: ruts_payload, as: :json
 
     assert_response :ok
     json_response = JSON.parse(response.body)
     assert_equal [], json_response["liquidaciones"]
+  end
+
+  test "returns error when ruts parameter is missing" do
+    post "/api/payrolls/calculate", as: :json
+
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert json_response.key?("error")
   end
 end
