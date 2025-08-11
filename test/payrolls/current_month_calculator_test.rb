@@ -1,6 +1,6 @@
 require "test_helper"
 
-class CurrentMonthCalculatorTest < ActiveSupport::TestCase
+class Reports::CurrentMonthPayrollTest < ActiveSupport::TestCase
   fixtures :employees, :health_plans, :assignments
   
   def setup
@@ -10,7 +10,7 @@ class CurrentMonthCalculatorTest < ActiveSupport::TestCase
 
   test "calculates payroll for specified employees" do
     ruts = [@employee1.rut, @employee2.rut]
-    results = CurrentMonthCalculator.calculate(ruts)
+    results = Reports::CurrentMonthPayroll.calculate(ruts)
     
     assert_instance_of Array, results
     assert_equal 2, results.size
@@ -18,7 +18,7 @@ class CurrentMonthCalculatorTest < ActiveSupport::TestCase
 
   test "returns hash format for each employee" do
     ruts = [@employee1.rut]
-    results = CurrentMonthCalculator.calculate(ruts)
+    results = Reports::CurrentMonthPayroll.calculate(ruts)
     result = results.first
     
     assert_instance_of Hash, result
@@ -30,7 +30,7 @@ class CurrentMonthCalculatorTest < ActiveSupport::TestCase
 
   test "includes correct employee data" do
     ruts = [@employee1.rut, @employee2.rut]
-    results = CurrentMonthCalculator.calculate(ruts)
+    results = Reports::CurrentMonthPayroll.calculate(ruts)
     ana_result = results.find { |r| r[:employee_rut] == "18.123.456-7" }
     carlos_result = results.find { |r| r[:employee_rut] == "19.876.543-2" }
 
@@ -43,7 +43,7 @@ class CurrentMonthCalculatorTest < ActiveSupport::TestCase
 
   test "returns empty array with non-existent ruts" do
     ruts = ["99.999.999-9"]
-    results = CurrentMonthCalculator.calculate(ruts)
+    results = Reports::CurrentMonthPayroll.calculate(ruts)
     
     assert_equal [], results
   end

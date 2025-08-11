@@ -12,7 +12,7 @@ class Api::PayrollsController < ApplicationController
 
   def calculate
     if params[:ruts].present?
-      liquidaciones = CurrentMonthCalculator.calculate(params[:ruts])
+      liquidaciones = Reports::CurrentMonthPayroll.calculate(params[:ruts])
       render json: { liquidaciones: liquidaciones }, status: :ok
     else
       render json: { error: "Parameter 'ruts' is required" }, status: :bad_request
