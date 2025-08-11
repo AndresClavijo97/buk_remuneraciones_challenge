@@ -1,16 +1,16 @@
 require "test_helper"
 
-class Payrolls::CalculatorTest < ActiveSupport::TestCase
+class ChilePayrollTest < ActiveSupport::TestCase
   fixtures :employees, :health_plans, :assignments
   
   def setup
     @employee = employees(:ana_maria)
-    @calculator = Payrolls::Calculator.new(@employee)
+    @calculator = ChilePayroll.new(@employee)
   end
 
   test "returns a PayrollResult object" do
     result = @calculator.calculate
-    assert_instance_of PayrollResult, result
+    assert_instance_of Chile::PayrollResult, result
   end
 
   test "includes employee basic information" do
@@ -89,7 +89,7 @@ class Payrolls::CalculatorTest < ActiveSupport::TestCase
 
   test "uses fixed UF amount for Isapre" do
     isapre_employee = employees(:carlos_soto)
-    isapre_calculator = Payrolls::Calculator.new(isapre_employee)
+    isapre_calculator = ChilePayroll.new(isapre_employee)
     isapre_result = isapre_calculator.calculate
 
     expected_health = (4.5 * 37000).round
@@ -98,7 +98,7 @@ class Payrolls::CalculatorTest < ActiveSupport::TestCase
 
   test "applies income cap for AFP and health" do
     high_salary_employee = employees(:high_earner)
-    calculator = Payrolls::Calculator.new(high_salary_employee)
+    calculator = ChilePayroll.new(high_salary_employee)
     result = calculator.calculate
     
     # Should be capped at 81.6 UF

@@ -1,4 +1,4 @@
-module ChileanPayrollConstants
+module ChileRules
   # Valores para Junio 2025 según el README
   UF_VALUE = 37_000.0
   UTM_VALUE = 65_000.0
